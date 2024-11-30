@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-Br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,49 +7,103 @@
     <title>Login</title>
 
     <style>
-
-        *{
+        * {
             box-sizing: border-box;
         }
-        body{
+        body {
             width: 100%;    
             height: 100%;
         }
-        input{
+        input {
             display: block;
             margin: 10px auto;
             width: 250px;
             height: 30px;
         }
-
+        form {
+            text-align: center;
+        }
     </style>
 
 </head>
 <body>
     
-    <form>
+    <form id="login-form">
         <h3>Login</h3>
         <input type="text" placeholder="Login" id="login">
-        <input type="password" placeholder="Senha" id ="senha">
+        <input type="password" placeholder="Senha" id="senha">
         <button onclick="logar(); return false">Entrar</button>
+        <button onclick="exibirRegistro(); return false">Registrar-se</button>
+    </form>
+
+    <form id="registro-form" style="display: none;">
+        <h3>Registrar</h3>
+        <input type="text" placeholder="Novo Login" id="novo-login">
+        <input type="password" placeholder="Nova Senha" id="nova-senha">
+        <button onclick="registrar(); return false">Registrar</button>
+        <button onclick="voltarLogin(); return false">Cancelar</button>
     </form>
 
     <script>
+        const usuarioPadrao = {
+            login: "admin",
+            senha: "admin"
+        };
 
-        function logar(){
-
+        function logar() {
             var login = document.getElementById('login').value;
             var senha = document.getElementById('senha').value;
 
-            if(login == "admin" && senha == "admin"){
+            if (login === usuarioPadrao.login && senha === usuarioPadrao.senha) {
                 alert('Seja bem-vindo à sua lista de tarefas!');
                 location.href = "lista.html";
-            }else{
-                alert('Usuário ou senha incorretos. Usuário: admin | Senha: admin');
+                return;
             }
+            var usuarios = JSON.parse(localStorage.getItem('usuarios')) || {};
 
+            if (usuarios[login] && usuarios[login] === senha) {
+                alert('Seja bem-vindo à sua lista de tarefas!');
+                location.href = "lista.html";
+            } else {
+                alert('Usuário ou senha incorretos.');
+            }
         }
 
+        function registrar() {
+            var novoLogin = document.getElementById('novo-login').value;
+            var novaSenha = document.getElementById('nova-senha').value;
+
+            if (novoLogin === '' || novaSenha === '') {
+                alert('Preencha todos os campos!');
+                return;
+            }
+            if (novoLogin === usuarioPadrao.login) {
+                alert('O usuário já existe!');
+                return;
+            }
+            var usuarios = JSON.parse(localStorage.getItem('usuarios')) || {};
+
+            if (usuarios[novoLogin]) {
+                alert('Usuário já existe!');
+                return;
+            }
+
+            usuarios[novoLogin] = novaSenha;
+            localStorage.setItem('usuarios', JSON.stringify(usuarios));
+
+            alert('Usuário registrado com sucesso!');
+            voltarLogin();
+        }
+
+        function exibirRegistro() {
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('registro-form').style.display = 'block';
+        }
+
+        function voltarLogin() {
+            document.getElementById('registro-form').style.display = 'none';
+            document.getElementById('login-form').style.display = 'block';
+        }
     </script>
 
 </body>
